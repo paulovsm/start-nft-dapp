@@ -14,14 +14,17 @@ contract StarNotary is ERC721 {
     // Implement Task 1 Add a name and symbol properties
     // name: Is a short name to your token
     // symbol: Is a short string like 'USD' -> 'American Dollar'
-    
+    constructor(string memory name_, string memory symbol_)
+    ERC721(name_, symbol_) public {
+        // Initialize the name and symbol
+    }
 
     // mapping the Star with the Owner Address
     mapping(uint256 => Star) public tokenIdToStarInfo;
     // mapping the TokenId and price
     mapping(uint256 => uint256) public starsForSale;
 
-    
+    // Implement Task 2 Add a function to get the name of the token    
     // Create Star using the Struct
     function createStar(string memory _name, uint256 _tokenId) public { // Passing the name and tokenId as a parameters
         Star memory newStar = Star(_name); // Star is an struct so we are creating a new Star
@@ -38,7 +41,7 @@ contract StarNotary is ERC721 {
 
     // Function that allows you to convert an address into a payable address
     function _make_payable(address x) internal pure returns (address payable) {
-        return address(uint160(x));
+        return payable(x);
     }
 
     function buyStar(uint256 _tokenId) public  payable {
@@ -46,11 +49,12 @@ contract StarNotary is ERC721 {
         uint256 starCost = starsForSale[_tokenId];
         address ownerAddress = ownerOf(_tokenId);
         require(msg.value > starCost, "You need to have enough Ether");
-        _transferFrom(ownerAddress, msg.sender, _tokenId); // We can't use _addTokenTo or_removeTokenFrom functions, now we have to use _transferFrom
+        transferFrom(ownerAddress, msg.sender, _tokenId); // We can't use _addTokenTo or_removeTokenFrom functions, now we have to use _transferFrom
         address payable ownerAddressPayable = _make_payable(ownerAddress); // We need to make this conversion to be able to use transfer() function to transfer ethers
         ownerAddressPayable.transfer(starCost);
         if(msg.value > starCost) {
-            msg.sender.transfer(msg.value - starCost);
+            address payable senderAddressPayable = _make_payable(msg.sender); // We need to make this conversion to be able to use transfer() function to transfer ethers
+            senderAddressPayable.transfer(msg.value - starCost);
         }
     }
 
