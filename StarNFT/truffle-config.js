@@ -17,13 +17,13 @@
  * phrase from a file you've .gitignored so it doesn't accidentally become public.
  *
  */
+const fs = require('fs');
 
  const HDWalletProvider = require('truffle-hdwallet-provider');
- const infuraKey = "<INFURA KEY>"
- 
- //
- // const fs = require('fs');
- const mnemonic = "<MESTAMASK SEED>";
+ //const infuraKey = "<INFURA KEY>"
+ const infuraKey = fs.readFileSync(".rinkeby-infurakey").toString().trim();
+ //const infuraKey = "<METAMASK KEY>"
+ const mnemonic = fs.readFileSync(".secret").toString().trim();
 
 module.exports = {
   /**
